@@ -1,0 +1,90 @@
+open(DIFFLIST, "<juucase");
+while (<DIFFLIST>) {
+($d,$one,$two) = /([01]\.[0-9]+)\s+([\wöäå]+)<->([\wöäå]+)/;
+next unless abs $d >= 0.2;
+$seen{$one}++;
+$seen{$two}++;
+$delta{$one}{$two} = abs $d;
+$delta{$two}{$one} = abs $d;
+}
+close DIFFLIST;
+
+
+open(AMPLIST, "<mindre.analyses");    
+while (<AMPLIST>) {                   
+    chomp;
+$token = "";
+if (/([\wåäö]+):.*(\[NUM=.*)$/){
+    $token=$1;
+    $anal=$2;
+    while ($anal =~ /NUM=(\w+)/g) {
+	    $num{$1}++;
+	}
+    while ($anal =~ /CASE=(\w+)/g) {
+	$case{$1}++;
+    }
+    while ($anal =~ /CLIT\d*=(\w+)/g) {
+	$clit{$1}++;
+    }
+    while ($anal =~ /POSS=(\w+)/g) {
+	$poss{$1}++;
+    }
+} else {
+    print "************** $_\n";
+    next;
+}
+if ($anal{$token}) {
+    $anal{$token} =     $anal{$token}."|".$anal;
+} else {
+    $anal{$token} =     $anal;
+}
+}                                                                                          
+close AMPLIST;             
+
+$numdiff = 0;
+$numn = 0;
+for $pp (keys %seen) {
+    for $qq (keys %{ $delta{$pp} }) {
+	while ($anal{$pp} =~ /CASE=(\w+)/g) {
+	    $pcase = $1;
+	    while ($anal{$qq} =~ /CASE=(\w+)/g) {
+		$qcase = $1;
+		if ($pcase eq $qcase) {
+		    while ($anal{$pp} =~ /NUM=(\w+)/g) {
+			$pnum = $1;
+			while ($anal{$qq} =~ /NUM=(\w+)/g) {
+			    $qnum = $1;
+			    if ($pnum ne $qnum) {	
+				$numdiff += $delta{$pp}{$qq};
+				$numn++;
+			    } else {
+				$samenum{$pcase} += $delta{$pp}{$qq};
+				$samenumn{$pcase}++;
+			    }
+			}
+		    }
+		}
+	    }
+	}
+}
+}
+for $c (keys %samenum) {
+    print "$c\t$samenum{$c}\t$samenumn{$c}\t".$samenum{$c}/$samenumn{$c}."\n";
+}
+print "dif\t$numdiff\t$numn\t".$numdiff/$numn."\n";
+
+
+
+
+#%s = ();
+#%n = ();
+#for $pp (keys %num) {
+#    for $qq (keys %num) {
+#	next unless $delta{$pp}{$qq};
+#	$n{$num{$pp}."-".$num{$qq}}++;
+#	$s{$num{$pp}."-".$num{$qq}} += $delta{$pp}{$qq};
+#}
+#}
+#for $s (keys %s) {
+# print "$s\t$n{$s}\t".$s{$s} / $n{$s}."\n";
+#}

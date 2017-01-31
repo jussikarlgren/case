@@ -1,0 +1,21 @@
+poistin monikot joki-sanasta sillä ovat relatiivipronominin homograafeja
+poistin kaikki korrelaatiot jotka ovat alle 0.2
+poistin maksa-sanan sillä se on homograafi maksaaverbille melkein joka tapauksessa
+poistin täi ja tuli myös homografiasyistä (tämä ja tulla)
+poistin useimmat jää-sanat samasta syystä
+poistin monta tie-sanaa (te: esm teillä ja tehdä esm tein )
+poistin nahka ja juurijohdokset sillä puuttuvat radvisisita
+filter.perl luo pienemmän radvisin
+
+
+
+0.14	joillakin<->joillekin
+0.16	joista<->joilta
+0.19	joissa<->joille
+0.25	joista<->joille
+0.32	joilta<->joille
+0.33	joista<->joissa
+0.33	joilla<->joista
+0.33	joilla<->joilta
+0.35	joilla<->joissa
+0.43	joilla<->joille
