@@ -55,14 +55,44 @@ for $pp (keys %seen) {
 #		print "$pp $qq $delta{$pp}{$qq} $panal ( @{ $anal{$pp} } ) $qanal ( @{ $anal{$qq} } )\n";
 		$qanal =~ /CASE=(\w+)/;
 		$qcase = $1;
+		if ($inner{$pcase} && $inner{$qcase}) {
+		    if ($panal =~ /NUM=(\w+)/) {
+			$pnum = $1;
+			if ($qanal =~ /NUM=(\w+)/) {
+			    $qnum = $1;
+			    if ($pnum ne $qnum) {
+				$numdiffc{INNERC} += $delta{INNERC};
+				$numdiffn{INNERC}++;
+			    } else {
+				$samenum{INNERC} += $delta{INNERC};
+				$samenumn{INNERC}++;
+			    }
+			}
+		    }
+		}
+		if ($outer{$pcase} && $outer{$qcase}) {
+		    if ($panal =~ /NUM=(\w+)/) {
+			$pnum = $1;
+			if ($qanal =~ /NUM=(\w+)/) {
+			    $qnum = $1;
+			    if ($pnum ne $qnum) {
+				$numdiffc{OUTERC} += $delta{OUTERC};
+				$numdiffn{OUTERC}++;
+			    } else {
+				$samenum{OUTERC} += $delta{OUTERC};
+				$samenumn{OUTERC}++;
+			    }
+			}
+		    }
+		}
 		if ($pcase eq $qcase) {
 		    if ($panal =~ /NUM=(\w+)/) {
 			$pnum = $1;
 			if ($qanal =~ /NUM=(\w+)/) {
 			    $qnum = $1;
 			    if ($pnum ne $qnum) {
-				$numdiff += $delta{$pp}{$qq};
-				$numn++;
+				$numdiffc{NUMDIFF} += $delta{$pp}{$qq};
+				$numdiffn{NUMDIFF}++;
 			    } else {
 				$samenum{$pcase} += $delta{$pp}{$qq};
 				$samenumn{$pcase}++;
@@ -82,6 +112,9 @@ for $pp (keys %seen) {
 print "numdif\t$numdiff\t$numn\t".$numdiff/$numn."\n";
 foreach $c (keys %samenum) {
     print "$c\t$samenum{$c}\t$samenumn{$c}\t".$samenum{$c}/$samenumn{$c}."\n";
+}
+foreach $c (keys %numdiffn) {
+    print "$c\t$numdiffc{$c}\t$numdiffn{$c}\t".$numdiffc{$c}/$numdiffn{$c}."\n";
 }
 foreach $d (keys %casen) {
 	print "$d\t$casediff{$d}\t$casen{$d}\t".$casediff{$d}/$casen{$d}."\n";
